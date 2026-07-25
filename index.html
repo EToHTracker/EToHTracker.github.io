@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EToH Custom Live Tracker</title>
+    <style>
+        body { 
+            background-color: #0b0c10; 
+            color: #c5c6c7; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            text-align: center; 
+            padding: 50px 20px; 
+            margin: 0;
+        }
+        .box { 
+            background-color: #1f2833; 
+            padding: 30px; 
+            border-radius: 12px; 
+            display: inline-block; 
+            min-width: 320px; 
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0px 0px 20px #45f3ff; 
+            box-sizing: border-box;
+        }
+        h2 {
+            margin-top: 0;
+            color: #45f3ff;
+            letter-spacing: 1px;
+        }
+        input { 
+            padding: 12px; 
+            font-size: 16px; 
+            border-radius: 6px; 
+            border: 2px solid #34495e; 
+            width: 100%; 
+            margin-bottom: 15px; 
+            outline: none; 
+            background-color: #0b0c10;
+            color: #ffffff;
+            box-sizing: border-box;
+        }
+        input:focus {
+            border-color: #45f3ff;
+        }
+        button { 
+            padding: 12px; 
+            font-size: 16px; 
+            background-color: #45f3ff; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            width: 100%; 
+            color: #0b0c10;
+            transition: background 0.2s ease;
+        }
+        button:hover { 
+            background-color: #00ffcc; 
+        }
+        .stat-line { 
+            margin: 15px 0; 
+            font-size: 18px; 
+            border-bottom: 1px dashed #34495e; 
+            padding-bottom: 8px; 
+            text-align: left;
+        }
+        #hardest { 
+            color: #ff4545; 
+            font-weight: bold; 
+        }
+        #status { 
+            font-weight: bold; 
+            color: #f1c40f; 
+            margin-top: 15px;
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background: #45f3ff;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="box">
+        <h2>EToH Player Scanner</h2>
+        <input type="text" id="userInput" placeholder="Enter Roblox Username">
+        <br>
+        <button onclick="searchPlayer()">Load Live Stats</button>
+        
+        <p id="status">Waiting for input...</p>
+        <hr>
+        <div class="stat-line" id="total">📊 Total Towers: --</div>
+        <div class="stat-line" id="hardest">🔥 Hardest: --</div>
+        <div class="stat-line" id="breakdown">🔵 Ch: 0 | 🟣 In: 0 | 🔴 Re: 0</div>
+    </div>
+
+<script>
+// Official Badge IDs from Eternal Towers of Hell (Silent Abyss Subrealm)
+const TOWER_DB = [
+    { id: 2143764056, name: "Steeple of Guiding Lights (SoGL)", difficulty: "Challenging", value: 1 },
+    { id: 2143764064, name: "Steeple of Xenial Abyss (SoXA)", difficulty: "Challenging", value: 2 },
+    { id: 2143764075, name: "Steeple of Wicked Grotto (SoWG)", difficulty: "Intense", value: 3 },
+    { id: 2143764094, name: "Tower of Shallow Waters (ToSW)", difficulty: "Intense", value: 4 },
+    { id: 2143764118, name: "Steeple of Involuntary Isolation (SoII)", difficulty: "Intense", value: 5 },
+    { id: 2143764125, name: "Tower of Tenebrous Depths (ToTD)", difficulty: "Intense", value: 6 },
+    { id: 2143764150, name: "Steeple of Midnight Acropolis (SoMA)", difficulty: "Remorseless", value: 7 },
+    { id: 2143764143, name: "Steeple of Malignant Blight (SoMB)", difficulty: "Remorseless", value: 8 }
+];
+
+async function searchPlayer() {
+    const user = document.getElementById("userInput").value.trim();
+    if(!user) {
+        document.getElementById("status").innerText = "❌ Please type a username!";
+        return;
+    }
+    
+    document.getElementById("status").innerText = "Finding Roblox ID...";
+    
+    try {
+        // Step 1: Request user profile details using a public proxy gateway
+        let proxy = "https://corsproxy.io?";
+        let userUrl = encodeURIComponent("https://roblox.com");
+        
+        let res = await fetch(proxy + userUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ "usernames": [user], "excludeBannedUsers": false })
+        });
+        let userData = await res.json();
+        
+        if(!userData.data || userData.data.length === 0) {
+            document.getElementById("status").innerText = "❌ User not found.";
+            return;
+        }
+        
+        let id = userData.data[0].id;
+        document.getElementById("status").innerText = `Found profile! Scanning inventory...`;
+
+        // Step 2: Request inventory badge list via proxy gateway
+        let badgeUrl = encodeURIComponent(`https://roblox.com{id}/badges?limit=100`);
+        let badgeRes = await fetch(proxy + badgeUrl);
+        let badgeData = await badgeRes.json();
+        
+        if (!badgeData.data) {
+            document.getElementById("status").innerText = "⚠️ Privacy block. Set Roblox inventory to 'Everyone'.";
+            return;
+        }
+
+        let ownedIds = badgeData.data.map(b => b.id);
+
+        let count = 0;
+        let hardest = null;
+        let diffs = { "Challenging": 0, "Intense": 0, "Remorseless": 0 };
+
+        // Cross-reference data
+        TOWER_DB.forEach(t => {
+            if(ownedIds.includes(t.id)) {
+                count++;
+                diffs[t.difficulty]++;
+                if(!hardest || t.value > hardest.value) hardest = t;
+            }
+        });
+
+        // Step 3: Map outputs to the visual elements
+        document.getElementById("status").innerText = "✅ Done!";
+        document.getElementById("total").innerText = `📊 Total Towers: ${count}`;
+        document.getElementById("hardest").innerText = hardest ? `🔥 Hardest: ${hardest.name}` : "🔥 Hardest: None";
+        document.getElementById("breakdown").innerText = `🔵 Ch: ${diffs["Challenging"]} | 🟣 In: ${diffs["Intense"]} | 🔴 Re: ${diffs["Remorseless"]}`;
+
+    } catch(e) {
+        document.getElementById("status").innerText = "❌ Error connecting to data servers.";
+        console.error(e);
+    }
+}
+</script>
+</body>
+</html>
