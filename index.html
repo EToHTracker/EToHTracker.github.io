@@ -3,112 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EToH Custom Live Tracker</title>
+    <title>EToH Universal Global Live Tracker</title>
     <style>
         body { 
-            background-color: #0b0c10; 
-            color: #c5c6c7; 
+            background-color: #0c0f12; 
+            color: #d1d5db; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             text-align: center; 
-            padding: 50px 20px; 
+            padding: 40px 20px; 
             margin: 0;
         }
         .box { 
-            background-color: #1f2833; 
-            padding: 30px; 
-            border-radius: 12px; 
+            background-color: #1a202c; 
+            padding: 35px 25px; 
+            border-radius: 16px; 
             display: inline-block; 
-            min-width: 320px; 
-            max-width: 450px;
+            min-width: 340px; 
+            max-width: 500px;
             width: 100%;
-            box-shadow: 0px 0px 20px #45f3ff; 
+            box-shadow: 0px 0px 25px #00ffcc; 
             box-sizing: border-box;
         }
         h2 {
             margin-top: 0;
-            color: #45f3ff;
+            color: #00ffcc;
             letter-spacing: 1px;
+            text-transform: uppercase;
+            font-size: 24px;
         }
         input { 
-            padding: 12px; 
+            padding: 14px; 
             font-size: 16px; 
-            border-radius: 6px; 
-            border: 2px solid #34495e; 
+            border-radius: 8px; 
+            border: 2px solid #2d3748; 
             width: 100%; 
             margin-bottom: 15px; 
             outline: none; 
-            background-color: #0b0c10;
+            background-color: #0c0f12;
             color: #ffffff;
             box-sizing: border-box;
+            text-align: center;
         }
         input:focus {
-            border-color: #45f3ff;
+            border-color: #00ffcc;
         }
         button { 
-            padding: 12px; 
+            padding: 14px; 
             font-size: 16px; 
-            background-color: #45f3ff; 
+            background-color: #00ffcc; 
             border: none; 
-            border-radius: 6px; 
+            border-radius: 8px; 
             cursor: pointer; 
             font-weight: bold; 
             width: 100%; 
-            color: #0b0c10;
-            transition: background 0.2s ease;
+            color: #0c0f12;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
         }
         button:hover { 
-            background-color: #00ffcc; 
+            background-color: #33ffdd; 
+            box-shadow: 0 0 10px #00ffcc;
         }
-        .stat-line { 
-            margin: 15px 0; 
-            font-size: 18px; 
-            border-bottom: 1px dashed #34495e; 
-            padding-bottom: 8px; 
+        .stat-group {
+            background-color: #111827;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
             text-align: left;
+            border-left: 4px solid #00ffcc;
         }
-        #hardest { 
-            color: #ff4545; 
-            font-weight: bold; 
+        .group-title {
+            font-size: 14px;
+            color: #9ca3af;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-value {
+            font-size: 18px;
+            color: #ffffff;
+            font-weight: 600;
+        }
+        #hardest-value { 
+            color: #f3f4f6; 
         }
         #status { 
             font-weight: bold; 
-            color: #f1c40f; 
+            color: #f59e0b; 
             margin-top: 15px;
+            font-size: 15px;
         }
         hr {
             border: 0;
             height: 1px;
-            background: #45f3ff;
+            background: #2d3748;
             margin: 20px 0;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        .badge-type {
+            background: #2d3748;
+            padding: 8px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 13px;
         }
     </style>
 </head>
 <body>
 
     <div class="box">
-        <h2>EToH Player Scanner</h2>
+        <h2>EToH Global Scanner</h2>
         <input type="text" id="userInput" placeholder="Enter Roblox Username">
         <br>
-        <button onclick="searchPlayer()">Load Live Stats</button>
+        <button onclick="searchPlayer()">Scan All Realms</button>
         
-        <p id="status">Waiting for input...</p>
+        <p id="status">Ready to scan profiles...</p>
         <hr>
-        <div class="stat-line" id="total">📊 Total Towers: --</div>
-        <div class="stat-line" id="hardest">🔥 Hardest: --</div>
-        <div class="stat-line" id="breakdown">🔵 Ch: 0 | 🟣 In: 0 | 🔴 Re: 0</div>
+        
+        <div class="stat-group">
+            <div class="group-title">📊 Total Structures Beaten</div>
+            <div class="stat-value" id="total-count">--</div>
+        </div>
+
+        <div class="stat-group">
+            <div class="group-title">🏆 Structure Type Clears</div>
+            <div class="grid-3">
+                <div class="badge-type" id="type-towers">🏰 Towers: 0</div>
+                <div class="badge-type" id="type-steeples">🪜 Steeples: 0</div>
+                <div class="badge-type" id="type-citadels">🏛️ Citadels: 0</div>
+            </div>
+        </div>
+
+        <div class="stat-group" style="border-left-color: #ef4444;">
+            <div class="group-title">🔥 Estimated Hardest Achievement</div>
+            <div class="stat-value" id="hardest-value">None Detected</div>
+        </div>
     </div>
 
 <script>
-// Official Badge IDs from Eternal Towers of Hell (Silent Abyss Subrealm)
-const TOWER_DB = [
-    { id: 2143764056, name: "Steeple of Guiding Lights (SoGL)", difficulty: "Challenging", value: 1 },
-    { id: 2143764064, name: "Steeple of Xenial Abyss (SoXA)", difficulty: "Challenging", value: 2 },
-    { id: 2143764075, name: "Steeple of Wicked Grotto (SoWG)", difficulty: "Intense", value: 3 },
-    { id: 2143764094, name: "Tower of Shallow Waters (ToSW)", difficulty: "Intense", value: 4 },
-    { id: 2143764118, name: "Steeple of Involuntary Isolation (SoII)", difficulty: "Intense", value: 5 },
-    { id: 2143764125, name: "Tower of Tenebrous Depths (ToTD)", difficulty: "Intense", value: 6 },
-    { id: 2143764150, name: "Steeple of Midnight Acropolis (SoMA)", difficulty: "Remorseless", value: 7 },
-    { id: 2143764143, name: "Steeple of Malignant Blight (SoMB)", difficulty: "Remorseless", value: 8 }
+// Known map difficulty tiers linked to structural search keywords
+const DIFFICULTY_TIERS = [
+    { name: "Catastrophic/Horrific", keywords: ["catastrophic", "horrific"], weight: 7 },
+    { name: "Terrifying", keywords: ["terrifying"], weight: 6 },
+    { name: "Remorseless", keywords: ["remorseless"], weight: 5 },
+    { name: "Intense", keywords: ["intense"], weight: 4 },
+    { name: "Challenging", keywords: ["challenging"], weight: 3 },
+    { name: "Difficult/Hard", keywords: ["difficult", "hard"], weight: 2 },
+    { name: "Medium/Easy", keywords: ["medium", "easy", "effortless"], weight: 1 }
 ];
 
 async function searchPlayer() {
@@ -118,11 +164,11 @@ async function searchPlayer() {
         return;
     }
     
-    document.getElementById("status").innerText = "Finding Roblox ID...";
+    document.getElementById("status").innerText = "Connecting to Roblox Registry...";
     
     try {
         let proxy = "https://corsproxy.io?";
-        let userUrl = encodeURIComponent("https://users.roblox.com/v1/usernames/users");
+        let userUrl = encodeURIComponent("https://roblox.com");
         
         let res = await fetch(proxy + userUrl, {
             method: "POST",
@@ -131,44 +177,83 @@ async function searchPlayer() {
         }); // 1.2.1, 1.3.1
         let userData = await res.json(); // 1.2.2
         
-        // Verifies the array list actually contains search results
         if(!userData.data || userData.data.length === 0) {
             document.getElementById("status").innerText = "❌ User not found.";
             return;
         }
         
-        // FIXED: Extracting user ID directly out of item 0 inside the list array
-        let id = userData.data[0].id; // 1.3.1, 1.3.7
-        document.getElementById("status").innerText = `Found profile! Scanning inventory...`;
+        let id = userData.data[0].id;
+        document.getElementById("status").innerText = `Found ${user}! Scanning entire inventory...`;
 
-        let badgeUrl = encodeURIComponent(`https://roblox.com{id}/badges?limit=100`);
-        let badgeRes = await fetch(proxy + badgeUrl);
-        let badgeData = await badgeRes.json();
-        
-        if (!badgeData.data) {
-            document.getElementById("status").innerText = "⚠️ Privacy block. Set Roblox inventory to 'Everyone'.";
-            return;
+        // Infinite scroll loop variables to grab ALL badges beyond the 100 limit
+        let allBadges = [];
+        let nextPageCursor = "";
+        let keepLooping = true;
+        let pagesCrawled = 0;
+
+        while(keepLooping && pagesCrawled < 5) { // Protect speed by checking up to 500 badges
+            let cursorParam = nextPageCursor ? `&cursor=${nextPageCursor}` : "";
+            let badgeUrl = encodeURIComponent(`https://roblox.com{id}/badges?limit=100${cursorParam}`);
+            let badgeRes = await fetch(proxy + badgeUrl);
+            let badgeData = await badgeRes.json();
+            
+            if (!badgeData.data) {
+                document.getElementById("status").innerText = "⚠️ Privacy block! Change your Roblox Inventory settings to 'Everyone'.";
+                return;
+            }
+
+            allBadges = allBadges.concat(badgeData.data);
+            
+            if(badgeData.nextPageCursor) {
+                nextPageCursor = badgeData.nextPageCursor;
+                pagesCrawled++;
+            } else {
+                keepLooping = false;
+            }
         }
 
-        let ownedIds = badgeData.data.map(b => b.id);
+        // Tally counters
+        let towerCount = 0;
+        let steepleCount = 0;
+        let citadelCount = 0;
+        let highestWeight = 0;
+        let hardestName = "None Detected";
 
-        let count = 0;
-        let hardest = null;
-        let diffs = { "Challenging": 0, "Intense": 0, "Remorseless": 0 };
+        allBadges.forEach(badge => {
+            let name = badge.name.toLowerCase();
+            let desc = badge.description ? badge.description.toLowerCase() : "";
+            
+            // Step 1: Detect EToH structure criteria
+            let isTower = name.includes("tower of") || desc.includes("beat the tower");
+            let isSteeple = name.includes("steeple of") || desc.includes("beat the steeple");
+            let isCitadel = name.includes("citadel of") || desc.includes("beat the citadel");
 
-        // Process profile records against database list
-        TOWER_DB.forEach(t => {
-            if(ownedIds.includes(t.id)) {
-                count++;
-                diffs[t.difficulty]++;
-                if(!hardest || t.value > hardest.value) hardest = t;
+            if (isTower || isSteeple || isCitadel) {
+                if (isTower) towerCount++;
+                if (isSteeple) steepleCount++;
+                if (isCitadel) citadelCount++;
+
+                // Step 2: Extract tier strings dynamically out of badge records
+                DIFFICULTY_TIERS.forEach(tier => {
+                    tier.keywords.forEach(keyword => {
+                        if ((name.includes(keyword) || desc.includes(keyword)) && tier.weight > highestWeight) {
+                            highestWeight = tier.weight;
+                            hardestName = `${badge.name} (${tier.name})`;
+                        }
+                    });
+                });
             }
         });
 
-        document.getElementById("status").innerText = "✅ Done!";
-        document.getElementById("total").innerText = `📊 Total Towers: ${count}`;
-        document.getElementById("hardest").innerText = hardest ? `🔥 Hardest: ${hardest.name}` : "🔥 Hardest: None";
-        document.getElementById("breakdown").innerText = `🔵 Ch: ${diffs["Challenging"]} | 🟣 In: ${diffs["Intense"]} | 🔴 Re: ${diffs["Remorseless"]}`;
+        let grandTotal = towerCount + steepleCount + citadelCount;
+
+        // Step 3: Print metrics onto UI panels
+        document.getElementById("status").innerText = "✅ Global Scan Complete!";
+        document.getElementById("total-count").innerText = `${grandTotal} Map Objectives`;
+        document.getElementById("type-towers").innerText = `🏰 Towers: ${towerCount}`;
+        document.getElementById("type-steeples").innerText = `🪜 Steeples: ${steepleCount}`;
+        document.getElementById("type-citadels").innerText = `🏛️ Citadels: ${citadelCount}`;
+        document.getElementById("hardest-value").innerText = hardestName;
 
     } catch(e) {
         document.getElementById("status").innerText = "❌ Error connecting to data servers.";
