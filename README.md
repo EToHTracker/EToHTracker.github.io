@@ -6,7 +6,7 @@ This custom-coded web scanner allows you to type in any valid Roblox username an
 
 ## 🚀 Live Link
 Check out the live, running web application right here:
-👉 **https://github.io**
+👉 **[https://github.io](https://EToHTracker.github.io)**
 
 ## ✨ Features
 * 🔍 **Real-Time Search**: Converts text usernames into numerical IDs via the Roblox Users API.
