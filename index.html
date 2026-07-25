@@ -121,7 +121,6 @@ async function searchPlayer() {
     document.getElementById("status").innerText = "Finding Roblox ID...";
     
     try {
-        // Step 1: Request user profile details using a public proxy gateway
         let proxy = "https://corsproxy.io?";
         let userUrl = encodeURIComponent("https://roblox.com");
         
@@ -132,15 +131,16 @@ async function searchPlayer() {
         });
         let userData = await res.json();
         
+        // Verifies the array list actually contains search results
         if(!userData.data || userData.data.length === 0) {
             document.getElementById("status").innerText = "❌ User not found.";
             return;
         }
         
+        // FIX: Extracting user ID directly out of item 0 inside the list array
         let id = userData.data[0].id;
         document.getElementById("status").innerText = `Found profile! Scanning inventory...`;
 
-        // Step 2: Request inventory badge list via proxy gateway
         let badgeUrl = encodeURIComponent(`https://roblox.com{id}/badges?limit=100`);
         let badgeRes = await fetch(proxy + badgeUrl);
         let badgeData = await badgeRes.json();
@@ -156,7 +156,7 @@ async function searchPlayer() {
         let hardest = null;
         let diffs = { "Challenging": 0, "Intense": 0, "Remorseless": 0 };
 
-        // Cross-reference data
+        // Process profile records against database list
         TOWER_DB.forEach(t => {
             if(ownedIds.includes(t.id)) {
                 count++;
@@ -165,7 +165,6 @@ async function searchPlayer() {
             }
         });
 
-        // Step 3: Map outputs to the visual elements
         document.getElementById("status").innerText = "✅ Done!";
         document.getElementById("total").innerText = `📊 Total Towers: ${count}`;
         document.getElementById("hardest").innerText = hardest ? `🔥 Hardest: ${hardest.name}` : "🔥 Hardest: None";
